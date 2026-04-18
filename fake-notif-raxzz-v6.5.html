@@ -1,0 +1,688 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<title>Fake Notif By RaXzz</title>  
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+ <style>  
+body,html{  
+  margin:0;  
+  padding:0;  
+  font-family:Arial;  
+  height:100%;  
+  overflow:hidden;  
+  background:url("https://i.postimg.cc/QCNcykSq/cb633e81-78f3-442f-af3b-7297140a7d87.jpg");  
+  background-size:cover;  
+  background-position:center;  
+}  
+  
+/* LOADING */  
+#loading{  
+  position:fixed;  
+  inset:0;  
+  background:black;  
+  display:flex;  
+  justify-content:center;  
+  align-items:center;  
+  flex-direction:column;  
+  z-index:999999;  
+  color:white;  
+}  
+.bar-loading{  
+  width:200px;  
+  height:8px;  
+  background:#222;  
+  border-radius:10px;  
+  overflow:hidden;  
+}  
+.bar-fill{  
+  height:100%;  
+  width:0%;  
+  background:linear-gradient(90deg, red, yellow, lime);  
+}  
+  
+/* STATUS BAR */  
+#statusbar{  
+  position:fixed;  
+  padding-right:20px;  
+  top:0;  
+  width:100%;  
+  height:26px;  
+  background:rgba(0,0,0,0.35);  
+  display:flex;  
+  justify-content:space-between;  
+  align-items:center;  
+  padding:0 10px;  
+  padding-right:20px;  
+  color:white;  
+  font-size:12px;  
+  z-index:999999;  
+}  
+#left{display:flex;gap:6px;}  
+#right{  
+  display:flex;  
+  gap:19px;  
+  align-items:center;  
+  margin-right:25px;   
+  
+#signal{display:flex;gap:2px;align-items:flex-end;}  
+  display:flex;  
+  gap:2px;  
+  align-items:flex-end;  
+  margin-right:5px;   
+.bar{width:3px;background:white;}  
+.bar:nth-child(1){height:3px;}  
+.bar:nth-child(2){height:5px;}  
+.bar:nth-child(3){height:7px;}  
+.bar:nth-child(4){height:9px;}  
+}  
+  
+#battery{  
+  margin-right:11px;   
+  width:20px;  
+  height:10px;  
+  border:1.5px solid white;  
+  border-radius:2px;  
+  position:relative;  
+  display:flex;  
+  align-items:center;  
+  justify-content:center;  
+  font-size:6px;  
+}  
+#battery::after{  
+  content:"";  
+  position:absolute;  
+  right:-3px;  
+  top:4px;  
+  width:2px;  
+  height:6px;  
+  background:white;  
+}  
+  
+/* NOTIF */  
+#notif-container{  
+  position:fixed;  
+  top:30px;  
+  width:100%;  
+  display:flex;  
+  flex-direction:column;  
+  align-items:center;  
+  gap:10px;  
+}  
+.notif{  
+  position:relative;  
+  z-index:9999;  
+  width:92%;  
+  max-width:360px;  
+  background:rgba(0,0,0,0.75);  
+  color:white;  
+  border-radius:14px;  
+  padding:10px;  
+  display:flex;  
+  gap:10px;  
+}  
+  
+.notif img{width:42px;border-radius:10px;}  
+  
+/* UI */  
+#ui{  
+  position:fixed;  
+  bottom:0;  
+  width:100%;  
+  padding:8px;  
+  background:rgba(0,0,0,0.9);  
+}  
+  
+button,input,select{  
+  width:100%;  
+  margin:4px 0;  
+  padding:10px;  
+  border-radius:10px;  
+  background:#111;  
+  color:white;  
+  border:1px solid #333;  
+}  
+  
+/* WALLPAPER */  
+#wallpaper-page{  
+  position:fixed;  
+  inset:0;  
+  background:black;  
+  display:none;  
+  flex-direction:column;  
+  padding:10px;  
+  z-index:999999;  
+  overflow:auto;  
+}  
+.wall-grid{  
+  display:grid;  
+  grid-template-columns:repeat(2,1fr);  
+  gap:10px;  
+}  
+.wall-grid img{  
+  width:100%;  
+  border-radius:10px;  
+}  
+  
+/* HISTORY */  
+#history-page{  
+  position:fixed;  
+  inset:0;  
+  background:rgba(0,0,0,0.95);  
+  display:none;  
+  flex-direction:column;  
+  padding:10px;  
+  z-index:9999999;  
+  overflow-y:scroll;  
+  -webkit-overflow-scrolling:touch;  
+}  
+  
+#history-list{  
+  flex:1;  
+  overflow-y:auto;  
+  padding-bottom:80px;  
+}  
+  
+#history-page button{  
+  position:sticky;  
+  bottom:0;  
+  background:#111;  
+  z-index:10;  
+}  
+  
+ /* BLUR FIX */
+body.blur::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  background:rgba(0,0,0,0.2);
+  z-index:1;
+}
+
+/* notif tetap tajam */
+#notif-container,
+#statusbar{
+  position:relative;
+  z-index:10;
+}
+
+/* UI hilang saat blur */
+body.blur-active #ui{
+  display:none !important;
+}
+
+/* tombol back */
+#backBtn{
+  display:none;
+  position:fixed;
+  bottom:18px;
+  right:18px;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:rgba(0,0,0,0.5);
+  color:white;
+  border:1px solid rgba(255,255,255,0.2);
+  z-index:99999;
+  align-items:center;
+  justify-content:center;
+}
+  
+.hide-ui #ui,  
+  display:none !important;  
+}  
+  
+.blur-ui{  
+  filter: blur(18px);  
+}  
+  
+#backBtn{  
+  display:none;  
+}  
+  
+#backBtn{  
+  position:fixed;  
+  bottom:20px;  
+  right:20px;  
+  width:38px;  
+  height:38px;  
+  border-radius:50%;  
+  background:rgba(0,0,0,0.4);  
+  color:white;  
+  border:1px solid rgba(255,255,255,0.2);  
+  display:none;  
+  z-index:999999;  
+  backdrop-filter: blur(6px);  
+}  
+  
+#backBtn{  
+  transition:0.2s ease;  
+}  
+  
+#backBtn:active{  
+  transform:scale(0.9);  
+  opacity:1;  
+}  
+  
+#login{  
+  position:fixed;  
+  inset:0;  
+  background:rgba(0,0,0,0.95);  
+  display:flex;  
+  justify-content:center;  
+  align-items:center;  
+  z-index:9999999;  
+}  
+  
+#login .box{  
+  width:85%;  
+  max-width:320px;  
+  background:linear-gradient(145deg,#ff0000,#8b0000);  
+  padding:20px;  
+  border-radius:15px;  
+  color:white;  
+  text-align:center;  
+  box-shadow:0 0 20px red;  
+}  
+  
+#login input{  
+  width:100%;  
+  margin:6px 0;  
+  padding:10px;  
+  border-radius:10px;  
+  border:none;  
+}  
+  
+#login button{  
+  width:100%;  
+  padding:10px;  
+  margin-top:10px;  
+  border:none;  
+  border-radius:10px;  
+  background:black;  
+  color:white;  
+}  
+  
+#err{  
+  color:yellow;  
+  font-size:12px;  
+}  
+  
+#ui{  
+  position:fixed;  
+  bottom:0;  
+  width:100%;  
+  padding:8px;  
+  background:rgba(0,0,0,0.35);  
+  backdrop-filter: blur(10px);  
+  -webkit-backdrop-filter: blur(10px);  
+  border-top:1px solid rgba(255,255,255,0.1);  
+}  
+
+#music-page{
+  position:fixed;
+  inset:0;
+  background:black;
+  display:none;
+  flex-direction:column;
+  padding:10px;
+  z-index:999999;
+}
+
+#dev-page{
+  position:fixed;
+  inset:0;
+  background:black;
+  display:none;
+  flex-direction:column;
+  padding:15px;
+  z-index:9999999;
+}
+
+function sendNotif(){
+
+  document.getElementById("notifSound").play();
+
+  let a = app.value;
+
+
+</style> 
+<head> 
+
+<body>  
+
+<audio id="notifSound" src="https://www.myinstants.com/media/sounds/iphone_notification.mp3"></audio>
+
+<div id="bg"></div>  <div id="login">  
+  <div class="box">  
+    <h2>FAKE NOTIF BY RAXZZ - V6.0</h2>  
+    <input id="user" placeholder="Username">  
+    <input id="pass" type="password" placeholder="Password">  
+    <button onclick="login()">LOGIN</button>  
+    <p id="err"></p>  
+  </div>  
+</div>  <div id="loading">  
+  BY-RAxZZ-V6.5  
+  <div class="bar-loading">  
+    <div class="bar-fill" id="loadBar"></div>  
+  </div>  
+</div>  <div id="statusbar">  
+  <div id="left"><div id="clock">00:00:00</div></div>  
+  <div id="right">  
+    <div id="signal">  
+      <div class="bar"></div><div class="bar"></div>  
+      <div class="bar"></div><div class="bar"></div>  
+    </div>  
+    <div id="wifi"></div>  
+    <span>4G</span>  
+    <div id="battery">100%</div>  
+  </div>  
+</div>  <div id="notif-container"></div>  <!-- HISTORY -->  <div id="history-page">  
+  <h3 style="color:white">RIWAYAT NOTIF</h3>  
+  <div id="history-list"></div>  
+  <button onclick="closeHistory()">KEMBALI</button>  
+</div>  <!-- UI -->  <div id="ui">  
+  <select id="app"></select>  
+  <input id="name" placeholder="Nama">  
+  <input id="msg" placeholder="Pesan">    <input type="file" id="iconFile" accept="image/*">  
+  <button onclick="setCustomIcon()">SET ICON APP</button>  
+  <button onclick="sendNotif()">KIRIM NOTIF</button>  
+  <button onclick="openHistory()">RIWAYAT</button>  
+  <button onclick="toggleBlur()">BLUR</button>  
+  <button onclick="openWallpaper()">WALLPAPER</button>  
+</div>  <!-- WALLPAPER -->  <div id="wallpaper-page">  
+  <h3 style="color:white">Pilih Wallpaper</h3>  
+
+<!-- MUSIC PAGE -->
+<div id="music-page">
+  <h3 style="color:white">Music Player</h3>
+
+  <input type="file" id="musicFile" accept="audio/*">
+  <button onclick="setMusic()">LOAD MUSIK</button>
+
+  <audio id="player" controls style="width:100%; margin-top:10px;"></audio>
+
+  <button onclick="closeMusic()">KEMBALI</button>
+</div>
+
+<input type="file" id="wallFile" accept="image/*">
+<button onclick="setWallpaperFile()">SET WALLPAPER FILE</button>
+
+<button onclick="openMusic()">MUSIK</button>
+
+  <div class="wall-grid">  
+    <img src="https://i.postimg.cc/QCNcykSq/cb633e81-78f3-442f-af3b-7297140a7d87.jpg" onclick="selectWall(this.src)">  
+    <img src="https://i.postimg.cc/y6RZmTC5/0f7e533fcbf23b3c5294cd61d7a77dd7.jpg" onclick="selectWall(this.src)">  
+    <img src="https://i.postimg.cc/bw5yVKQQ/3265c1c92258c7e79e127a8622b66315.jpg" onclick="selectWall(this.src)">  
+    <img src="https://i.postimg.cc/d3JwTvYt/e8ee19761ab12c9e60d92720376c847e.jpg" onclick="selectWall(this.src)">  
+    <img src="https://i.postimg.cc/Zq3S70bs/6efce5562512c0542ceb25d202162679.jpg" onclick="selectWall(this.src)">  <img src="https://i.postimg.cc/C12y06CC/d738d4396eb35410357a83e21441e59e.jpg" onclick="selectWall(this.src)">  
+<img src="https://i.postimg.cc/y8TcGqsB/de40b90d986cb37f0cdb4248c5da85f7.jpg" onclick="selectWall(this.src)">  
+<img src="https://i.postimg.cc/65rv7s76/36ad905be05761f26b5e82e034be6ba5.jpg" onclick="selectWall(this.src)">  
+<img src="https://i.postimg.cc/zXFyznMX/1a630f71b98ebc1b001e93705da01de8.jpg" onclick="selectWall(this.src)">  
+<img src="https://i.postimg.cc/dVSt3n93/a68ecbc55f302133263c1b46bac348bf.jpg" onclick="selectWall(this.src)">  
+<img src="https://i.postimg.cc/8Pp1bxKf/d2e66c0ae366d5ff8da7785bf832f2f1.jpg" onclick="selectWall(this.src)">  
+<img src="https://i.postimg.cc/C5FVmf4j/566211b7b1b584f49633416769ea4fa2.jpg" onclick="selectWall(this.src)">  
+<img src="https://i.postimg.cc/P5Ln3Hm5/3df257d5e59fab73d08a553e21e703c3.jpg" onclick="selectWall(this.src)">  
+<img src="https://i.postimg.cc/8kt8Tc4p/43ef08837ee176a51348beec0f0f95da.jpg" onclick="selectWall(this.src)">  
+<img src="https://i.postimg.cc/pdYGkc1x/051106ccabdd9a357ca8a662ad7b4e01.jpg" onclick="selectWall(this.src)">  
+<img src="https://i.postimg.cc/tJf27K7S/59dc01096b222b6f31b7d633c053ab33.jpg" onclick="selectWall(this.src)">
+
+<img src="https://i.postimg.cc/13vqTz5g/Screenshot-20260418-124121.png" onclick="selectWall(this.src)">
+  </div>  
+  <button style="background:lime;color:black" onclick="applyWall()">UBAH</button>  
+  <button onclick="closeWallpaper()">KEMBALI</button>  
+</div>  <button id="backBtn" onclick="exitBlur()">↩</button>
+
+<script>  
+  
+/* loading */  
+let load=0;  
+let bar=document.getElementById("loadBar");  
+let i=setInterval(()=>{  
+ load+=5;  
+ bar.style.width=load+"%";  
+ if(load>=100){  
+  clearInterval(i);  
+  document.getElementById("loading").style.display="none";  
+ }  
+},100);  
+  
+/* jam */  
+setInterval(()=>{  
+ let d=new Date();  
+ clock.innerText=  
+ String(d.getHours()).padStart(2,"0")+":"+  
+ String(d.getMinutes()).padStart(2,"0");  
+},1000);  
+  
+/* battery */  
+let b=85;  
+setInterval(()=>{  
+ b--; if(b<=0)b=100;  
+ battery.innerText=b+"%";  
+},60000);  
+  
+/* HISTORY DATA */  
+let historyData=[];  
+  
+/* APPS (19+) */  
+const apps={  
+"Shopee Indonesia":"https://i.postimg.cc/NfFz3mMv/Screenshot-20260415-002748-1.jpg",  
+"Roblox":"https://i.postimg.cc/YqyS150b/Screenshot-20260415-002846-1.jpg",  
+"Instagram":"https://i.postimg.cc/vTZQnhsQ/Screenshot-20260415-003010-1.jpg",  
+"Facebook":"https://i.postimg.cc/Xvqm9PG6/Screenshot-20260415-003031-1.jpg",  
+"TikTok":"https://i.postimg.cc/gkp7gjX4/Screenshot-20260415-003043-1.jpg",  
+"Telegram":"https://i.postimg.cc/P5R2n5x7/Screenshot-20260415-003119-1.jpg",  
+"Free Fire Max":"https://i.postimg.cc/DfNZsV8t/IMG-20260415-011939-394.jpg",  
+"Mobile Legends":"https://i.postimg.cc/8zRPqjw2/IMG-20260415-011811-187.jpg",  
+"WhatsApp":"https://i.postimg.cc/pTp9bPmY/IMG-20260415-011811-027.jpg",  
+"Minecraft":"https://i.postimg.cc/gJTYvRky/IMG-20260415-011811-526.jpg",  
+"Honor of Kings":"https://i.postimg.cc/Pxg5gYGB/IMG-20260415-011954-262.jpg",  
+"PUBG":"https://i.postimg.cc/137sxwwv/IMG-20260415-011955-875.jpg",  
+"Dana":"https://i.postimg.cc/Y0Btn7YB/IMG-20260415-011946-172.jpg",  
+"Gopay":"https://i.postimg.cc/KvJyLBqk/IMG-20260415-011950-807.jpg",  
+"BRI":"https://i.postimg.cc/fysh7KQ5/IMG-20260415-011952-074.jpg",  
+"X":"https://i.postimg.cc/cCFdNj8b/Screenshot-20260415-131717-1.jpg",  
+"NGL":"https://i.postimg.cc/s25y21hW/Screenshot-20260415-131805-1.jpg",  
+"Spotify":"https://i.postimg.cc/Xq16PCTt/Screenshot-20260415-131933-1.jpg",  
+"Discord":"https://i.postimg.cc/q7HVW05v/Screenshot-20260415-131958-1.jpg",  
+"YouTube":"https://i.postimg.cc/15bLNsPK/Screenshot-20260415-132008-1.jpg",  
+"Block Blast":"https://i.postimg.cc/VLbzh7kS/Screenshot-20260415-132600-1.jpg",  
+"Blood Strike":"https://i.postimg.cc/Y9swngcV/Screenshot-20260415-132612-1.jpg",  
+"Raxzz Store":"https://i.postimg.cc/q7mRrNVG/IMG-20260404-WA0058.jpg",  
+  
+"Vidio":"https://i.postimg.cc/d1zgxNK3/Screenshot-20260415-164219-1.jpg",  
+"Neflix":"https://i.postimg.cc/t4XwwV8s/Screenshot-20260415-164233-1.jpg",  
+"Google":"https://i.postimg.cc/G2whS0YP/Screenshot-20260418-124343-1.jpg",
+};  
+  
+let sel=document.getElementById("app");  
+for(let k in apps){  
+ let o=document.createElement("option");  
+ o.value=k;  
+ o.innerText=k;  
+ sel.appendChild(o);  
+}  
+  
+/* NOTIF */  
+function sendNotif(){ 
+  let a = app.value;
+let sound = document.getElementById("notifSound");
+
+if(sound){
+  sound.currentTime = 0;
+  sound.play().catch(()=>{});
+}
+  
+ // 🔥 ini yang jadi NAMA APK  
+ let apkName = document.getElementById("name").value || a;  
+  
+ let m = document.getElementById("msg").value || "Pesan";  
+  
+ let d = document.createElement("div");  
+ d.className="notif";  
+  
+ // 🔥 tampilkan nama APK saja  
+ let icon = customIcons[a] || apps[a];  
+d.innerHTML = `<img src="${icon}" onerror="this.src='https://via.placeholder.com/42'"><div><b>${apkName}</b><br>${m}</div>`;  
+ document.getElementById("notif-container").prepend(d);  
+ setTimeout(()=>d.remove(),5000);  
+  
+ // 🔥 history juga pakai APK name  
+ historyData.push({app:a,name:apkName,msg:m});  
+}  
+  
+/* HISTORY */  
+function openHistory(){  
+  let h = document.getElementById("history-page");  
+  h.style.display="flex";  
+  h.scrollTop = 0;  
+  renderHistory();  
+}  
+function closeHistory(){  
+ document.getElementById("history-page").style.display="none";  
+}  
+function renderHistory(){  
+ let box=document.getElementById("history-list");  
+ box.innerHTML="";  
+ historyData.forEach(d=>{  
+  let div=document.createElement("div");  
+  div.className="notif";  
+  let icon = customIcons[d.app] || apps[d.app];  
+div.innerHTML=`<img src="${icon}"><div><b>${d.name}</b><br>${d.msg}</div>`;  
+  box.appendChild(div);  
+ });  
+}  
+  
+/* BLUR */  
+function toggleBlur(){
+  document.body.classList.add("blur");
+  document.body.classList.add("blur-active");
+
+  document.getElementById("ui").style.display = "none";
+  document.getElementById("backBtn").style.display = "flex";
+}
+  
+function exitBlur(){
+  document.body.classList.remove("blur");
+  document.body.classList.remove("blur-active");
+
+  document.getElementById("ui").style.display = "block";
+  document.getElementById("backBtn").style.display = "none";
+}
+
+/* WALLPAPER */  
+let selected="";  
+function openWallpaper(){document.getElementById("wallpaper-page").style.display="flex";}  
+function closeWallpaper(){document.getElementById("wallpaper-page").style.display="none";}  
+function selectWall(s){selected=s;}  
+function applyWall(){  
+ if(selected){  
+  document.body.style.background=`url(${selected})`;  
+  document.body.style.backgroundSize="cover";  
+ }  
+ closeWallpaper();  
+}  
+  
+document.getElementById("statusbar").style.display="none";  
+document.getElementById("ui").style.display="none";  
+document.getElementById("notif-container").style.display="none";  
+  
+function login(){  
+  let u=document.getElementById("user").value;  
+  let p=document.getElementById("pass").value;  
+  
+  if(u==="fakenotif" && p==="raxzzdev"){  
+    document.getElementById("login").style.display="none";  
+    document.getElementById("loading").style.display="flex";  
+  
+    let load=0;  
+    let bar=document.getElementById("loadBar");  
+  
+    let i=setInterval(()=>{  
+      load+=5;  
+      bar.style.width=load+"%";  
+  
+      if(load>=100){  
+        clearInterval(i);  
+        document.getElementById("loading").style.display="none";  
+        document.getElementById("statusbar").style.display="flex";  
+        document.getElementById("ui").style.display="block";  
+        document.getElementById("notif-container").style.display="flex";  
+      }  
+    },80);  
+  
+  } else {  
+    document.getElementById("err").innerText="Akses login lu salah bre, beli ke +6283178712682";  
+  }  
+}  
+  
+let customIcons = {};  
+  
+// ambil file gambar jadi icon app  
+function setCustomIcon(){  
+  let file = document.getElementById("iconFile").files[0];  
+  let appName = document.getElementById("app").value;  
+  
+  if(!file){  
+    alert("Pilih PP dulu bre ukuran harus kotak full GK panjang !");  
+    return;  
+  }  
+  
+  let reader = new FileReader();  
+  reader.onload = function(e){  
+    customIcons[appName] = e.target.result;  
+    alert("ICON APP BERHASIL DIGANTI!");  
+  }  
+  reader.readAsDataURL(file);  
+}  
+
+function setWallpaperFile(){
+  let file = document.getElementById("wallFile").files[0];
+
+  if(!file){
+    alert("Pilih gambar dulu!");
+    return;
+  }
+
+  let reader = new FileReader();
+  reader.onload = function(e){
+    document.body.style.background = `url(${e.target.result})`;
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
+
+    // simpan
+    localStorage.setItem("wallpaper", e.target.result);
+  }
+  reader.readAsDataURL(file);
+}
+
+function openMusic(){
+  document.getElementById("music-page").style.display = "flex";
+}
+
+function closeMusic(){
+  document.getElementById("music-page").style.display = "none";
+}
+
+function setMusic(){
+  let file = document.getElementById("musicFile").files[0];
+
+  if(!file){
+    alert("Pilih musik dulu!");
+    return;
+  }
+
+  let url = URL.createObjectURL(file);
+  let player = document.getElementById("player");
+
+  player.src = url;
+  player.play();
+}
+
+</script>
+
+</body>
+</html>
